@@ -6,6 +6,10 @@ prometheus_skip_install: false
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
 
+prometheus_basic_auth_enabled: false
+prometheus_nginx_enabled: true
+prometheus_route_prefix: true
+
 prometheus_web_listen_address: "0.0.0.0:9090"
 prometheus_web_external_url: ''
 
