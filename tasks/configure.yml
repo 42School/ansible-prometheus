@@ -49,12 +49,18 @@
   with_dict: "{{ prometheus_targets }}"
   when: prometheus_targets != {}
 
-- name: copy prometheus custom static targets
-  copy:
-    src: "{{ item }}"
+- name: Sync prometheus custom static targets
+  synchronize:
+    src: prometheus/targets/
     dest: "{{ prometheus_config_dir }}/file_sd/"
-    force: true
+    delete: yes
+  with_fileglob: "{{ prometheus_static_targets_files }}"
+
+- name: Change prometheus static targets
+  file:
+    path: "{{ prometheus_config_dir }}/file_sd/"
+    state: directory
+    recurse: yes
     owner: root
     group: prometheus
-    mode: 0640
-  with_fileglob: "{{ prometheus_static_targets_files }}"
+    mode: 0755
