@@ -12,17 +12,34 @@
   notify:
     - reload prometheus
 
-- name: copy custom alerting rule files
+- name: Copy before sync to validate rules files
   copy:
-    src: "{{ item }}"
+    src: "{{ prometheus_alert_rules_path }}"
     dest: "{{ prometheus_config_dir }}/rules/"
     owner: root
     group: prometheus
     mode: 0640
     validate: "{{ _prometheus_binary_install_dir }}/promtool check rules %s"
-  with_fileglob: "{{ prometheus_alert_rules_files }}"
+
+- name: Synchronize alerting rules files
+  synchronize:
+    src: "{{ prometheus_alert_rules_path }}"
+    dest: "{{ prometheus_config_dir }}/rules/"
+    delete: yes
+    rsync_opts:
+      - "--exclude=.getkeep"
+      - "--exclude=ansible_managed.rules"
   notify:
     - reload prometheus
+
+- name: Change rules files permissions
+  file:
+    path: "{{ prometheus_config_dir }}/rules/"
+    state: directory
+    recurse: yes
+    owner: root
+    group: prometheus
+    mode: u=rwX,g=rX,o=rx
 
 - name: configure prometheus
   template:
@@ -51,10 +68,13 @@
 
 - name: Sync prometheus custom static targets
   synchronize:
-    src: prometheus/targets/
+    src: "{{ prometheus_static_targets_path }}"
     dest: "{{ prometheus_config_dir }}/file_sd/"
     delete: yes
-  with_fileglob: "{{ prometheus_static_targets_files }}"
+    rsync_opts:
+      - "--exclude=.getkeep"
+  notify:
+    - reload prometheus
 
 - name: Change prometheus static targets
   file:
@@ -63,4 +83,4 @@
     recurse: yes
     owner: root
     group: prometheus
-    mode: 0755
+    mode: u=rwX,g=rX,o=rx
