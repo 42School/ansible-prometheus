@@ -143,3 +143,11 @@
     state: present
   when:
     -  prometheus_nginx_enabled|bool == true
+
+- name: Install htpasswd depedencies
+  tags: pkg
+  apt:
+    state: present
+    pkg: python-passlib
+  when:
+    - prometheus_basic_auth_enabled|bool == true
