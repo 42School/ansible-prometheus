@@ -35,9 +35,3 @@
     enabled: true
   tags:
     - prometheus_run
-
-- include: nginx.yml
-  become: true
-  tags:
-    - prometheus_nginx
-  when: prometheus_nginx_enabled|bool == true
