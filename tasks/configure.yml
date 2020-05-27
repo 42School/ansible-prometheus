@@ -12,26 +12,6 @@
   notify:
     - reload prometheus
 
-- name: Copy before sync to validate rules files
-  copy:
-    src: "{{ prometheus_alert_rules_path }}"
-    dest: "{{ prometheus_config_dir }}/rules/"
-    owner: root
-    group: prometheus
-    mode: 0640
-    validate: "{{ _prometheus_binary_install_dir }}/promtool check rules %s"
-
-- name: Synchronize alerting rules files
-  synchronize:
-    src: "{{ prometheus_alert_rules_path }}"
-    dest: "{{ prometheus_config_dir }}/rules/"
-    delete: yes
-    rsync_opts:
-      - "--exclude=.getkeep"
-      - "--exclude=ansible_managed.rules"
-  notify:
-    - reload prometheus
-
 - name: Change rules files permissions
   file:
     path: "{{ prometheus_config_dir }}/rules/"
