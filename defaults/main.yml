@@ -79,7 +79,7 @@ prometheus_scrape_configs:
 # Alternative config file name, searched in ansible templates path.
 prometheus_config_file: 'prometheus.yml.j2'
 
-prometheus_alert_rules_path: "prometheus/rules/"
+# Remote target host configuration
 prometheus_static_targets_path: "prometheus/targets/"
 
 prometheus_alert_rules:
