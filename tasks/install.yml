@@ -20,7 +20,7 @@
     state: directory
     owner: prometheus
     group: prometheus
-    mode: 0755
+    mode: 0750
 
 - name: create prometheus configuration directories
   file:
@@ -28,7 +28,7 @@
     state: directory
     owner: root
     group: prometheus
-    mode: 0770
+    mode: 0750
   with_items:
     - "{{ prometheus_config_dir }}"
     - "{{ prometheus_config_dir }}/conf.d"

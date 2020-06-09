@@ -12,15 +12,6 @@
   notify:
     - reload prometheus
 
-- name: Change rules files permissions
-  file:
-    path: "{{ prometheus_config_dir }}/rules/"
-    state: directory
-    recurse: yes
-    owner: root
-    group: prometheus
-    mode: u=rwX,g=rX,o=rx
-
 - name: configure prometheus
   template:
     src: "{{ prometheus_config_file }}"
@@ -49,18 +40,18 @@
 - name: Sync prometheus custom static targets
   synchronize:
     src: "{{ prometheus_static_targets_path }}"
-    dest: "{{ prometheus_config_dir }}/file_sd/"
+    dest: "{{ prometheus_config_dir }}"
     delete: yes
     rsync_opts:
       - "--exclude=.getkeep"
   notify:
     - reload prometheus
 
-- name: Change prometheus static targets
+- name: Change prometheus static targets permissions
   file:
-    path: "{{ prometheus_config_dir }}/file_sd/"
+    path: "{{ prometheus_config_dir }}/"
     state: directory
     recurse: yes
     owner: root
     group: prometheus
-    mode: u=rwX,g=rX,o=rx
+    mode: 0750
