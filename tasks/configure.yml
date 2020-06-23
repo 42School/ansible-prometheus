@@ -41,17 +41,30 @@
   synchronize:
     src: "{{ prometheus_static_targets_path }}"
     dest: "{{ prometheus_config_dir }}"
+    owner: no
+    group: no
     delete: yes
     rsync_opts:
       - "--exclude=.getkeep"
   notify:
     - reload prometheus
 
-- name: Change prometheus static targets permissions
+###
+### Need to only change files permissions BUT NOT directory itself
+###
+
+- name: lookup files with a certain pattern
+  find:
+    paths: "{{ prometheus_config_dir }}/file_sd"
+    file_type: file
+    patterns: "*.json"
+  register: filelist
+
+- name: change permissions of all files
   file:
-    path: "{{ prometheus_config_dir }}/"
-    state: directory
-    recurse: yes
+    path: "{{ item.path }}"
+    state: file
     owner: root
     group: prometheus
-    mode: 0750
+    mode: 0640
+  with_items: "{{ filelist.files }}"
